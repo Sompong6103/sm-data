@@ -54,3 +54,14 @@ AddEventHandler(script_name..':getData', function(name, cb)
 		end
 	end
 end)
+
+SM_GET_DATA = function(name)
+	if name == "allplayer" then
+		return SM.PlayerOnline
+	end
+	for k, v in pairs(SM.ALLJob) do
+		if k == name then
+			return v
+		end
+	end
+end

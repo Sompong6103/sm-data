@@ -16,3 +16,7 @@ server_scripts {
     "config.lua",
     "core/server.lua"
 }
+
+exports {
+    "SM_GET_DATA",
+}
