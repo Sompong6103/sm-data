@@ -7,4 +7,8 @@ Config["Event_base"] = {
     ["playerDropped"] = "esx:playerDropped"
 }
 
---[[ Test One ]]
+Config['JobToUse'] = {
+    [1] = 'police',
+    [2] = 'ambulance',
+    --[3] = 'chef',
+}

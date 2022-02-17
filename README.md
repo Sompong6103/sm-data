@@ -8,6 +8,10 @@
 ### Requirement
 > ESX => https://github.com/ESX-Org/es_extended
 
+### Config
+> Config["Event_base"]
+> Config['JobToUse'] Occupation required to check the number
+
 ### Code examples
 
 ```lua

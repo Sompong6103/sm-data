@@ -5,7 +5,7 @@ description 'SM-Developer Script sm-data'
 
 author 'Sompong#6103'
 
-version '0.5'
+version '0.6'
 
 client_scripts {
     "config.lua",

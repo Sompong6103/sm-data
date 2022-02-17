@@ -1,35 +1,57 @@
 ESX = nil 
 script_name = GetCurrentResourceName()
 
+SMdata = {}
+
 Citizen.CreateThread(function()
-    Citizen.Wait(5000)
+    SMdata.job = {}
+    for k,v in pairs(Config['JobToUse']) do
+        SMdata.job[k] = 0
+    end
     TriggerEvent(Config['Event_base']['getShared_obj'], function(obj) ESX = obj end)
     while ESX == nil do
         Citizen.Wait(5)
     end
-    print("^2["..script_name.."] ^5Can use")
+    print("^2["..script_name.."] ^5Can Use Script")
 end)
 
-SM = {}
-SM.All_Player = {}
-SM.PLAYER_Online = 0
+function checkJobNameCanSend(playerJobName, status)
+    for k,v in pairs(Config['JobToUse']) do
+        if playerJobName == v then
+            if status then
+                SMdata.job[k] = SMdata.job[k] + 1
+            else
+                SMdata.job[k] = SMdata.job[k] - 1
+            end
+            return true
+        end
+    end
+    return false
+end
 
-AddEventHandler(Config["Event_base"]["playerLoaded"], function(source, job, lastJob)
-    SM.All_Player[source] = {}
-    SM.All_Player[source].name_job = job.name
-    TriggerClientEvent(script_name..'SendNewJob', -1, SM.All_Player, SM.PLAYER_Online, ESX.Jobs)
+AddEventHandler(Config["Event_base"]["setJob"], function(source, job, lastJob)
+    checkJobNameCanSend(job.name, true)
+    checkJobNameCanSend(lastJob.name, false)
+    TriggerClientEvent(script_name..':cl:SendUpdateData', -1, SMdata.job, GetNumPlayerIndices())
 end)
 
-AddEventHandler(Config["Event_base"]["playerLoaded"], function(playerId, reason)
-    SM.PLAYER_Online = SM.PLAYER_Online + 1
-    PLAYER_LOAD(playerId)
+AddEventHandler(Config["Event_base"]["playerLoaded"], function(playerId, xPlayer)
+    local result = checkJobNameCanSend(xPlayer.job.name, true)
+    if result then
+        TriggerClientEvent(script_name..':cl:SendUpdateData', -1, SMdata.job, GetNumPlayerIndices())
+    else
+        TriggerClientEvent(script_name..':cl:SendUpdateData', -1, nil, GetNumPlayerIndices())
+    end
 end)
 
 AddEventHandler(Config["Event_base"]["playerDropped"], function(playerId, reason)
-    print("ok Disconnect")
-    SM.All_Player[playerId] = nil
-    SM.PLAYER_Online = SM.PLAYER_Online - 1
-    TriggerClientEvent(script_name..'SendNewJob', -1, SM.All_Player, SM.PLAYER_Online, ESX.Jobs)
+    local xPlayer = ESX.GetPlayerFromId(playerId)
+    local result = checkJobNameCanSend(xPlayer.job.name, false)
+    if result then
+        TriggerClientEvent(script_name..':cl:SendUpdateData', -1, SMdata.job, GetNumPlayerIndices())
+    else
+        TriggerClientEvent(script_name..':cl:SendUpdateData', -1, nil, GetNumPlayerIndices())
+    end
 end)
 
 
@@ -39,20 +61,11 @@ AddEventHandler('onResourceStart', function(resourceName)
             Citizen.Wait(5)
         end
         local xPlayers = ESX.GetPlayers()
-        SM.PLAYER_Online = #xPlayers
         for i=1, #xPlayers do
             Citizen.Wait(100)
             local xPlayer = ESX.GetPlayerFromId(xPlayers[i])
-            SM.All_Player[xPlayer.source] = {}
-            SM.All_Player[xPlayer.source].name_job = xPlayer.getJob().name
+            local result = checkJobNameCanSend(xPlayer.job.name, true)
         end
-        TriggerClientEvent(script_name..'SendNewJob', -1, SM.All_Player, SM.PLAYER_Online, ESX.Jobs)
+        TriggerClientEvent(script_name..':cl:SendUpdateData', -1, SMdata.job, GetNumPlayerIndices())
     end
 end)
-
-PLAYER_LOAD = function(id_player)
-    local xPlayer = ESX.GetPlayerFromId(id_player)
-    SM.All_Player[id_player] = {}
-    SM.All_Player[id_player].name_job = xPlayer.getJob().name
-    TriggerClientEvent(script_name..'SendNewJob', -1, SM.All_Player, SM.PLAYER_Online, ESX.Jobs)
-end
