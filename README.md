@@ -33,6 +33,18 @@ end)
 TriggerEvent('sm-data:getData', 'ambulance', function(results) -- Check the number of ambulance in the entire server.
     print(results) -- The number of results
 end)
+
+
+-- exports function
+exports["sm-data"]:SM_GET_DATA(nameJob)
+
+-- EX
+local wanPolice = 5
+if exports["sm-data"]:SM_GET_DATA(nameJob) >= wanPolice then
+    print("Police >= 5")
+else
+    print("Police < 5")
+end
 ```
 
 
