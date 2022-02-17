@@ -52,20 +52,3 @@ else
 end
 ```
 
-
-```lua
--- Server Side
-
-TriggerClientEvent('sm-data:getData', source, 'Name of the desired job', function(results)
-    print(results) -- Number that is online in the server.
-    if results >= 2 then
-        -- When when a career that needs more than 2 online will do this line
-    else
-        -- When when the required online career is less than 2, it will do this line.
-    end
-end)
-
-TriggerClientEvent('sm-data:getData', source, 'police', function(results)
-    print(results) -- The number of results
-end)
-```
